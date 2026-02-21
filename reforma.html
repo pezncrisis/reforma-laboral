@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitor Legislativo: Reforma Laboral Argentina 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155; }
+.chart-container {
+position: relative;
+width: 100%;
+max-width: 600px;
+margin: 0 auto;
+height: 300px;
+max-height: 400px;
+}
+@media (min-width: 768px) { .chart-container { height: 350px; } }
+.active-tab { border-bottom: 2px solid #0f766e; color: #0f766e; font-weight: 600; }
+.card-hover:hover { transform: translateY(-2px); transition: all 0.2s ease-in-out; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+.hidden-content { display: none; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+<!-- Navbar -->
+<nav class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-teal-700 rounded-md flex items-center justify-center text-white font-bold text-sm">ML</div>
+                <span class="font-bold text-xl text-slate-800 tracking-tight">Monitor Legislativo <span class="text-teal-600 font-normal">| Feb 2026</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-1 rounded">Estado: APROBADO</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+    <!-- Intro Section -->
+    <section class="mb-10 text-center max-w-3xl mx-auto">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">Reforma Laboral Argentina: Análisis Objetivo</h1>
+        <p class="text-lg text-slate-600 leading-relaxed">
+            Este informe interactivo desglosa los cambios estructurales de la Ley de Modernización Laboral aprobada en febrero de 2026. Explore los impactos reales, la letra chica y las proyecciones económicas para cada actor del mercado laboral.
+        </p>
+    </section>
+
+    <!-- KPI Dashboard -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm card-hover">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Período de Prueba</p>
+            <div class="mt-2 flex items-baseline">
+                <span class="text-3xl font-bold text-slate-900">Hasta 1 año</span>
+            </div>
+            <p class="mt-1 text-sm text-slate-600">Extensión máxima para micro-pymes.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm card-hover">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Fondo de Cese</p>
+            <div class="mt-2 flex items-baseline">
+                <span class="text-3xl font-bold text-teal-600">Opcional</span>
+            </div>
+            <p class="mt-1 text-sm text-slate-600">Alternativa al Art. 245 LCT (Indemnización).</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm card-hover">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Colaboradores</p>
+            <div class="mt-2 flex items-baseline">
+                <span class="text-3xl font-bold text-indigo-600">Max 3</span>
+            </div>
+            <p class="mt-1 text-sm text-slate-600">Independientes sin relación de dependencia.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm card-hover">
+            <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Blanqueo</p>
+            <div class="mt-2 flex items-baseline">
+                <span class="text-3xl font-bold text-slate-900">0% Multas</span>
+            </div>
+            <p class="mt-1 text-sm text-slate-600">Condonación total por regularización.</p>
+        </div>
+    </div>
+
+    <!-- Section 1: The Core Mechanics (Persona Selector) -->
+    <section class="mb-16">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">Impacto por Rol</h2>
+                <p class="text-slate-500 mt-1">Seleccione su perfil para filtrar el análisis de beneficios y riesgos.</p>
+            </div>
+            <div class="mt-4 md:mt-0 bg-slate-100 p-1 rounded-lg flex">
+                <button onclick="setPersona('empleador')" id="btn-empleador" class="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-white text-slate-800 shadow-sm">Empleador</button>
+                <button onclick="setPersona('empleado')" id="btn-empleado" class="px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">Empleado</button>
+                <button onclick="setPersona('autonomo')" id="btn-autonomo" class="px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">Autónomo</button>
+            </div>
+        </div>
+
+        <!-- Dynamic Content Container -->
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <!-- Header of the dynamic section -->
+            <div class="p-6 border-b border-slate-100 bg-slate-50">
+                <h3 id="persona-title" class="text-lg font-semibold text-slate-800">Perspectiva: Empleador</h3>
+                <p id="persona-desc" class="text-sm text-slate-600 mt-1">Foco en previsibilidad de costos, seguridad jurídica y reducción de litigiosidad.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                <!-- Text/List Content -->
+                <div class="p-6 lg:p-8">
+                    <h4 class="font-semibold text-slate-900 mb-4 flex items-center">
+                        <span class="w-2 h-6 bg-teal-500 rounded mr-2"></span>
+                        Puntos Clave & Letra Chica
+                    </h4>
+                    <ul id="persona-list" class="space-y-4">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+
+                <!-- Visualization Column -->
+                <div class="bg-slate-50 p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-slate-100 flex flex-col justify-center">
+                     <div class="mb-4">
+                        <h4 id="chart-title" class="font-semibold text-center text-slate-700 mb-2">Previsibilidad del Costo de Despido</h4>
+                        <p id="chart-desc" class="text-xs text-center text-slate-500 mb-4">Comparativa de acumulación de pasivo laboral vs. aporte mensual.</p>
+                     </div>
+                     <div class="chart-container">
+                         <canvas id="impactChart"></canvas>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Deep Dive - Trial Period -->
+    <section class="mb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Extensión del Período de Prueba</h2>
+                <p class="text-slate-600 mb-4 text-sm leading-relaxed">
+                    Uno de los puntos más debatidos es la modificación del artículo 92 bis de la Ley de Contrato de Trabajo. El objetivo declarado es incentivar la contratación formal reduciendo el riesgo inicial.
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-md">
+                    <h4 class="text-sm font-bold text-blue-800 mb-1">El Dato Clave</h4>
+                    <p class="text-xs text-blue-700">Durante este período, cualquiera de las partes puede extinguir la relación sin causa y sin derecho a indemnización (aunque sí con preaviso).</p>
+                </div>
+                
+                <div class="mt-6 space-y-3">
+                    <div class="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
+                        <span class="text-slate-600">Ley Anterior (General)</span>
+                        <span class="font-mono font-bold text-slate-400">3 Meses</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
+                        <span class="text-slate-600">Reforma (General)</span>
+                        <span class="font-mono font-bold text-teal-600">6 Meses</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
+                        <span class="text-slate-600">PyMEs (6-100 emp.)</span>
+                        <span class="font-mono font-bold text-teal-600">8 Meses</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
+                        <span class="text-slate-600">Micro (< 5 emp.)</span>
+                        <span class="font-mono font-bold text-teal-600">1 Año</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-semibold text-slate-800 mb-6">Comparativa Visual de Tiempos</h3>
+                <div class="chart-container">
+                    <canvas id="trialPeriodChart"></canvas>
+                </div>
+                <div class="mt-4 text-center">
+                    <p class="text-xs text-slate-400 italic">Fuente: Art. 92 bis LCT (Texto Modificado 2026)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Fine Print Explorer -->
+    <section class="mb-12">
+        <h2 class="text-2xl font-bold text-slate-800 mb-6">Letra Chica: Detalles Críticos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Card 1: Despidos -->
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-red-300 transition-colors group">
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-3 group-hover:scale-110 transition-transform">🚫</span>
+                    <h3 class="font-bold text-slate-800">Bloqueos y Tomas</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-3">
+                    Se incorpora como causal de <strong>Injuria Grave</strong> la participación en bloqueos o tomas de establecimientos.
+                </p>
+                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500">
+                    <strong>Efecto:</strong> Permite el despido con causa justa (sin indemnización) si se impide el ingreso de personas o bienes.
+                </div>
+            </div>
+
+            <!-- Card 2: Fondo de Cese -->
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-teal-300 transition-colors group">
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-3 group-hover:scale-110 transition-transform">💰</span>
+                    <h3 class="font-bold text-slate-800">Fondo de Cese</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-3">
+                    Sistema optativo (por convenio colectivo). Sustituye la indemnización por antigüedad.
+                </p>
+                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500">
+                    <strong>Mecánica:</strong> El empleador aporta un % mensual (aprox 8%) a una cuenta. Al irse (despido o renuncia), el empleado cobra ese fondo.
+                </div>
+            </div>
+
+            <!-- Card 3: Trabajador Independiente -->
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors group">
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-3 group-hover:scale-110 transition-transform">🤝</span>
+                    <h3 class="font-bold text-slate-800">Figura del Colaborador</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-3">
+                    Un monotributista puede tener hasta <strong>3 colaboradores</strong> independientes.
+                </p>
+                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500">
+                    <strong>Detalle:</strong> No hay relación de dependencia. Se basa en una relación autónoma/productiva. Requiere aporte individual al régimen simplificado.
+                </div>
+            </div>
+
+            <!-- Card 4: Tercerización -->
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-orange-300 transition-colors group">
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-3 group-hover:scale-110 transition-transform">🔗</span>
+                    <h3 class="font-bold text-slate-800">Solidaridad</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-3">
+                    Se modifican las reglas de responsabilidad solidaria en la tercerización.
+                </p>
+                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500">
+                    <strong>Cambio:</strong> La empresa principal puede retener pagos al contratista si este no cumple con sus obligaciones laborales, pero se acotan los supuestos de solidaridad automática.
+                </div>
+            </div>
+
+             <!-- Card 5: Licencias -->
+             <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-pink-300 transition-colors group">
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-3 group-hover:scale-110 transition-transform">🤰</span>
+                    <h3 class="font-bold text-slate-800">Maternidad / Paternidad</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-3">
+                    Prohibición de trabajar 45 días antes y 45 después, pero opción de reducir la previa a 10 días y acumular post-parto.
+                </p>
+                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500">
+                    <strong>Objetivo:</strong> Dar mayor flexibilidad a la persona gestante para organizar sus tiempos de licencia.
+                </div>
+            </div>
+
+             <!-- Card 6: Blanqueo -->
+             <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-green-300 transition-colors group">
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-3 group-hover:scale-110 transition-transform">📄</span>
+                    <h3 class="font-bold text-slate-800">Regularización (Blanqueo)</h3>
+                </div>
+                <p class="text-sm text-slate-600 mb-3">
+                    Extinción de acción penal y condonación de deuda por capital e intereses.
+                </p>
+                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500">
+                    <strong>Antigüedad:</strong> Se puede reconocer hasta 5 años de antigüedad real para los trabajadores regularizados.
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p class="mb-2 font-medium text-slate-300">Monitor Legislativo Independiente</p>
+        <p class="text-xs max-w-2xl mx-auto">
+            La información presentada se basa en los textos aprobados por la HCDN en febrero de 2026. Este sitio tiene fines informativos y no constituye asesoramiento legal. Consulte el Boletín Oficial para el texto normativo definitivo.
+        </p>
+        <div class="mt-4 flex justify-center space-x-4 text-xs">
+            <span>Fuente: Proyecto Ley Bases</span>
+            <span>•</span>
+            <span>Boletín Oficial</span>
+            <span>•</span>
+            <span>Análisis Comparado</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // --- Data & State ---
+    const personas = {
+        'empleador': {
+            title: 'Perspectiva: Empleador',
+            desc: 'Foco en la reducción de contingencias legales, previsibilidad de costos de salida y facilidades para la contratación.',
+            list: [
+                '<strong>Cero Multas por Blanqueo:</strong> Eliminación de multas por falta de registro si se regulariza al trabajador (Ley 24.013 derogada en partes).',
+                '<strong>Fondo de Cese (Previsibilidad):</strong> Transforma el pasivo laboral incierto (indemnización) en un costo operativo mensual fijo (aporte al fondo).',
+                '<strong>Período de Prueba Extendido:</strong> Posibilidad de evaluar personal hasta 12 meses (Micro-Pymes) sin costo indemnizatorio de salida.',
+                '<strong>Seguridad Jurídica en Despidos:</strong> Definición clara de "bloqueo" como causa justa de despido, reduciendo la discrecionalidad judicial.'
+            ],
+            chartType: 'line',
+            chartTitle: 'Acumulación de Pasivo vs. Costo Fondo',
+            chartData: {
+                labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+                datasets: [
+                    {
+                        label: 'Costo Tradicional (Indemnización Acumulada)',
+                        data: [100, 220, 350, 500, 700], // Exponential due to salary increases + seniority
+                        borderColor: '#ef4444', // Red for liability
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Aporte Fondo Cese (Acumulado)',
+                        data: [80, 160, 240, 320, 400], // Linear/Predictable cost
+                        borderColor: '#0d9488', // Teal
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            }
+        },
+        'empleado': {
+            title: 'Perspectiva: Empleado',
+            desc: 'Análisis sobre estabilidad, nuevos derechos de portabilidad de antigüedad y riesgos en la contratación inicial.',
+            list: [
+                '<strong>Riesgo Inicial:</strong> Mayor inestabilidad durante el primer año (o 6 meses) debido a la extensión del período de prueba.',
+                '<strong>Fondo de Cese (Mochila):</strong> Si el convenio lo adopta, el dinero acumulado es tuyo. Si renunciás, te llevás el fondo (a diferencia del sistema actual donde la renuncia es $0).',
+                '<strong>Regularización:</strong> Incentivo para que empleadores te pongan "en blanco", reconociendo hasta 5 años de aportes hacia atrás.',
+                '<strong>Libertad Sindical:</strong> Cambios en la forma de descontar cuotas solidarias (ahora requiere consentimiento explícito).'
+            ],
+            chartType: 'bar',
+            chartTitle: 'Indemnización vs. Fondo ante Renuncia',
+            chartData: {
+                labels: ['Renuncia Año 1', 'Renuncia Año 5', 'Despido Año 1', 'Despido Año 5'],
+                datasets: [
+                    {
+                        label: 'Sistema Actual (Art 245)',
+                        data: [0, 0, 100, 500], // 0 on resignation
+                        backgroundColor: '#94a3b8'
+                    },
+                    {
+                        label: 'Nuevo Sistema (Fondo Cese)',
+                        data: [80, 400, 80, 400], // You get the fund regardless (hypothetically)
+                        backgroundColor: '#0d9488'
+                    }
+                ]
+            }
+        },
+        'autonomo': {
+            title: 'Perspectiva: Autónomo / Independiente',
+            desc: 'Nueva figura legal para emprendedores y contratistas que trabajan por proyectos.',
+            list: [
+                '<strong>Hasta 3 Colaboradores:</strong> Podes armar un equipo de hasta 3 personas sin que se considere relación de dependencia laboral.',
+                '<strong>Régimen Simplificado:</strong> Un aporte unificado mensual para el colaborador independiente.',
+                '<strong>Sin Riesgo de Juicio Laboral:</strong> La ley explicita que no existe vínculo de dependencia si se cumplen los requisitos del régimen especial.',
+                '<strong>Agilidad:</strong> Ideal para proyectos de software, construcción pequeña o servicios profesionales.'
+            ],
+            chartType: 'doughnut',
+            chartTitle: 'Estructura Equipo Independiente',
+            chartData: {
+                labels: ['Titular (Independiente)', 'Colaborador 1', 'Colaborador 2', 'Colaborador 3'],
+                datasets: [
+                    {
+                        label: 'Estructura Permitida',
+                        data: [1, 1, 1, 1],
+                        backgroundColor: ['#0f172a', '#38bdf8', '#38bdf8', '#38bdf8'],
+                        borderWidth: 0
+                    }
+                ]
+            }
+        }
+    };
+
+    let currentPersona = 'empleador';
+    let impactChartInstance = null;
+    let trialChartInstance = null;
+
+    // --- Functions ---
+
+    function init() {
+        renderPersonaContent();
+        renderTrialChart();
+    }
+
+    function setPersona(personaKey) {
+        currentPersona = personaKey;
+        
+        // Update Buttons
+        document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
+            btn.classList.remove('bg-white', 'text-slate-800', 'shadow-sm');
+            btn.classList.add('text-slate-600', 'hover:text-slate-800');
+        });
+        const activeBtn = document.getElementById(`btn-${personaKey}`);
+        activeBtn.classList.remove('text-slate-600', 'hover:text-slate-800');
+        activeBtn.classList.add('bg-white', 'text-slate-800', 'shadow-sm');
+
+        renderPersonaContent();
+    }
+
+    function renderPersonaContent() {
+        const data = personas[currentPersona];
+        
+        // Text Content
+        document.getElementById('persona-title').innerText = data.title;
+        document.getElementById('persona-desc').innerText = data.desc;
+        document.getElementById('chart-title').innerText = data.chartTitle;
+        
+        // List Content
+        const listEl = document.getElementById('persona-list');
+        listEl.innerHTML = '';
+        data.list.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'text-sm text-slate-600 border-l-2 border-slate-200 pl-3 py-1';
+            li.innerHTML = item;
+            listEl.appendChild(li);
+        });
+
+        // Update Impact Chart
+        const ctx = document.getElementById('impactChart').getContext('2d');
+        
+        if (impactChartInstance) {
+            impactChartInstance.destroy();
+        }
+
+        const chartConfig = {
+            type: data.chartType,
+            data: data.chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + (currentPersona === 'autonomo' ? ' persona' : ' unidades');
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Specific tweaks per chart type
+        if(data.chartType === 'doughnut') {
+            chartConfig.options.cutout = '60%';
+        }
+
+        impactChartInstance = new Chart(ctx, chartConfig);
+    }
+
+    function renderTrialChart() {
+        const ctx = document.getElementById('trialPeriodChart').getContext('2d');
+        
+        trialChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Ley Anterior', 'Reforma (General)', 'PyME (6-100)', 'Micro (<5)'],
+                datasets: [{
+                    label: 'Meses de Prueba',
+                    data: [3, 6, 8, 12],
+                    backgroundColor: [
+                        '#94a3b8', // Slate 400
+                        '#0d9488', // Teal 600
+                        '#0f766e', // Teal 700
+                        '#115e59'  // Teal 800
+                    ],
+                    borderRadius: 4,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Meses' },
+                        grid: { borderDash: [2, 2] }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                if(context.label === 'Micro (<5)') return 'Máxima flexibilidad para micro-emprendimientos.';
+                                if(context.label === 'Ley Anterior') return 'Estándar histórico.';
+                                return '';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize on load
+    window.addEventListener('load', init);
+
+</script>
+</body>
+</html>
