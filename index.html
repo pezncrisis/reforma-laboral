@@ -3,176 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Reforma Laboral 2026 v2.0</title>
+    <title>Dashboard Reforma Laboral 2026 - v2.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #64748b;
-            --success: #059669;
-            --warning: #d97706;
-            --danger: #dc2626;
-            --bg: #f8fafc;
-        }
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #1e293b; line-height: 1.6; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        h1, h2, h3 { color: #0f172a; margin-top: 0; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        :root { --p: #2563eb; --s: #64748b; --bg: #f1f5f9; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        .dashboard { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .full-width { grid-column: 1 / -1; }
+        h2, h3 { margin-top: 0; color: #0f172a; }
         
-        /* Form Styles */
+        /* Inputs */
         .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; color: var(--secondary); }
-        input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        button { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #1d4ed8; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--s); margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        
+        /* Stats */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .stat-card { padding: 15px; border-radius: 8px; border-left: 4px solid var(--p); background: #f8fafc; }
+        .stat-val { font-size: 1.2rem; font-weight: bold; display: block; }
+        .stat-label { font-size: 0.75rem; color: var(--s); text-transform: uppercase; }
 
-        /* Results Display */
-        .result-box { background: #f1f5f9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .badge-cese { background: #dcfce7; color: #166534; }
-        .badge-fal { background: #fef9c3; color: #854d0e; }
+        /* Chart Area */
+        .chart-container { height: 300px; position: relative; }
         
-        .alert { padding: 10px; border-radius: 6px; font-size: 0.85rem; margin-top: 10px; }
-        .alert-info { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
-        
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+        /* Comparison Tags */
+        .vs-tag { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .new-tag { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+
+        @media (max-width: 850px) { .dashboard { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header style="text-align: center; margin-bottom: 40px;">
-        <h1>Simulador Reforma Laboral 2026 <small style="font-size: 0.5em; vertical-align: middle;">v2.0</small></h1>
-        <p>Análisis técnico para Empleadores y Empleados - Ley 27.800</p>
+<div class="dashboard">
+    <header class="card full-width" style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, #1e293b, #334155); color: white;">
+        <div>
+            <h2 style="color: white; margin: 0;">Analizador Técnico Reforma 2026</h2>
+            <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Versión 2.0 - Simulación de Activos vs. Indemnización LCT</p>
+        </div>
+        <div style="text-align: right;">
+            <span class="new-tag">Ley 27.800 Vigente</span>
+        </div>
     </header>
 
-    <div class="grid">
-        <div class="card">
-            <h3><i class="fa-solid fa-calculator"></i> Cálculo de Aportes</h3>
-            <div class="input-group">
-                <label>Sueldo Bruto Mensual ($)</label>
-                <input type="number" id="bruto" placeholder="Ej: 800000" oninput="actualizarCalculos()">
+    <aside class="card">
+        <h3><i class="fa-solid fa-sliders"></i> Parámetros</h3>
+        <div class="input-group">
+            <label>Sueldo Bruto Actual ($)</label>
+            <input type="number" id="sueldo" value="850000" oninput="updateDashboard()">
+        </div>
+        <div class="input-group">
+            <label>Antigüedad (Años)</label>
+            <input type="number" id="anios" value="3" oninput="updateDashboard()">
+        </div>
+        <hr>
+        <h3>Letra Chica del Cese</h3>
+        <p style="font-size: 0.8rem; color: var(--s);">
+            A diferencia del sistema anterior, el <b>8%</b> se deposita mensualmente en una cuenta remunerada. 
+            <br><br>
+            <b>FAL (1.5%):</b> Es un fondo mutual estatal que no va a tu cuenta, sino a un fondo de garantía por insolvencia empresarial.
+        </p>
+        <div class="stat-card" style="border-color: #f59e0b; background: #fffbeb;">
+            <span class="stat-label">Preaviso Banco Horas</span>
+            <span class="stat-val" style="font-size: 1rem;">Mínimo 48 Horas</span>
+        </div>
+    </aside>
+
+    <main>
+        <div class="card" style="margin-bottom: 20px;">
+            <h3>Comparativa de Disponibilidad Inmediata</h3>
+            <div class="chart-container">
+                <canvas id="compChart"></canvas>
             </div>
-            <div class="input-group">
-                <label>Antigüedad Proyectada (Meses)</label>
-                <input type="number" id="meses" placeholder="Ej: 12" oninput="actualizarCalculos()">
-            </div>
-            
-            <div class="result-box">
-                <div style="margin-bottom: 10px;">
-                    <span class="badge badge-cese">Fondo de Cese (8.0%)</span>
-                    <div style="font-size: 1.2rem; font-weight: bold;" id="res-cese">$ 0</div>
-                </div>
-                <div>
-                    <span class="badge badge-fal">Fondo Asistencia (1.5%)</span>
-                    <div style="font-size: 1.1rem; font-weight: bold; color: var(--secondary);" id="res-fal">$ 0</div>
-                </div>
-                <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 10px 0;">
-                <div style="font-size: 0.8rem; color: #64748b;">
-                    <strong>Total Acumulado Estimado:</strong> <span id="res-total" style="color: var(--success); font-weight: bold;">$ 0</span>
-                </div>
-            </div>
-            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px;">
-                *El Fondo de Cese reemplaza la indemnización por despido (Art. 245 LCT). El capital genera rendimientos según Tasa BCRA.
-            </p>
         </div>
 
-        <div class="card">
-            <h3><i class="fa-solid fa-clock"></i> Validador de Jornada</h3>
-            <p style="font-size: 0.85rem; color: var(--secondary);">Verificá si la asignación de horas cumple la norma.</p>
-            
-            <div class="input-group">
-                <label>Horas Diarias Programadas</label>
-                <input type="number" id="horas-dia" placeholder="Máx 10" oninput="validarBanco()">
+        <div class="stat-grid">
+            <div class="card">
+                <span class="stat-label">Tu Fondo de Cese Hoy <span class="new-tag">Nuevo</span></span>
+                <span class="stat-val" id="val-cese">$ 0</span>
+                <p style="font-size: 0.7rem; color: green;">Cobrás esto aunque renuncies hoy.</p>
             </div>
-            <div class="input-group">
-                <label>Preaviso de Notificación (Horas)</label>
-                <input type="number" id="preaviso" placeholder="Min 48" oninput="validarBanco()">
-            </div>
-
-            <div id="status-banco" class="alert alert-info">
-                Ingresá datos para validar legalidad.
-            </div>
-
-            <div style="margin-top: 20px; font-size: 0.85rem; background: #fffbeb; border: 1px solid #fde68a; padding: 10px; border-radius: 6px;">
-                <strong>Letra Chica:</strong>
-                <ul style="margin: 5px 0; padding-left: 20px;">
-                    <li>Límite anual de 192 horas excedentes.</li>
-                    <li>Compensación obligatoria en ciclo de 12 meses.</li>
-                    <li>Mínimo 12 horas de descanso entre jornadas.</li>
-                </ul>
+            <div class="card">
+                <span class="stat-label">Indemnización Art. 245 <span class="vs-tag">Viejo</span></span>
+                <span class="stat-val" id="val-lct">$ 0</span>
+                <p style="font-size: 0.7rem; color: #991b1b;">Solo si te despiden sin causa.</p>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div class="card">
-        <h3>Diferencias Estructurales Clave</h3>
-        <div class="grid">
+    <section class="card full-width">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; font-size: 0.85rem;">
             <div>
-                <h4 style="color: var(--primary);"><i class="fa-solid fa-shield-halved"></i> Fondo de Cese (Individual)</h4>
-                <p style="font-size: 0.9rem;">Dinero propiedad del trabajador. Se cobra siempre: renuncia, despido con/sin causa o mutuo acuerdo. Es inembargable.</p>
+                <h4 style="color: var(--p); border-bottom: 2px solid var(--p); display: inline-block;">Banco de Horas</h4>
+                <p>Las horas extra no se pagan al 50/100% si se compensan dentro de los 12 meses. Límite: 10hs diarias.</p>
             </div>
             <div>
-                <h4 style="color: var(--warning);"><i class="fa-solid fa-building-columns"></i> FAL (Solidario)</h4>
-                <p style="font-size: 0.9rem;">Administrado por el Estado/Sindicato. Cubre al trabajador solo en caso de quiebra total del empleador (insuficiencia de fondos).</p>
+                <h4 style="color: var(--p); border-bottom: 2px solid var(--p); display: inline-block;">Rendimiento</h4>
+                <p>El fondo de cese no es estático; debe invertirse en activos autorizados (FCI) para no perder contra la inflación.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--p); border-bottom: 2px solid var(--p); display: inline-block;">Extinción</h4>
+                <p>Se elimina la figura del "despido punitorio". El fondo de cese es la única y final compensación económica.</p>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 <script>
-    function actualizarCalculos() {
-        const bruto = parseFloat(document.getElementById('bruto').value) || 0;
-        const meses = parseInt(document.getElementById('meses').value) || 0;
+    let myChart;
 
-        // Fórmulas de la Reforma 2026
-        const ceseMensual = bruto * 0.08;
-        const falMensual = bruto * 0.015;
+    function initChart() {
+        const ctx = document.getElementById('compChart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Si Renunciás Hoy', 'Si te Despiden Hoy'],
+                datasets: [{
+                    label: 'Sistema Anterior (LCT)',
+                    data: [0, 0],
+                    backgroundColor: '#cbd5e1'
+                }, {
+                    label: 'Reforma 2026 (Cese)',
+                    data: [0, 0],
+                    backgroundColor: '#2563eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    function updateDashboard() {
+        const sueldo = parseFloat(document.getElementById('sueldo').value) || 0;
+        const anios = parseFloat(document.getElementById('anios').value) || 0;
+        const meses = anios * 12;
+
+        // Cálculos
+        // Viejo: 1 sueldo por año (simplificado)
+        const totalLCT = sueldo * Math.ceil(anios);
         
-        // Simulación con tasa de rendimiento proyectada (aprox 3% mensual en contextos inflacionarios o indexación IPC)
-        // Para este simulador usamos capitalización simple para claridad
-        const totalAcumuladoCese = ceseMensual * meses;
+        // Nuevo: 8% mensual acumulado + FAL (que no lo ve el empleado, pero se aporta)
+        // Agregamos un 5% de rendimiento estimado acumulado
+        const totalCese = (sueldo * 0.08 * meses) * 1.05; 
 
-        document.getElementById('res-cese').innerText = `$ ${ceseMensual.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-        document.getElementById('res-fal').innerText = `$ ${falMensual.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-        document.getElementById('res-total').innerText = `$ ${totalAcumuladoCese.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+        // Actualizar Textos
+        document.getElementById('val-cese').innerText = `$ ${totalCese.toLocaleString('es-AR')}`;
+        document.getElementById('val-lct').innerText = `$ ${totalLCT.toLocaleString('es-AR')}`;
+
+        // Actualizar Gráfico
+        myChart.data.datasets[0].data = [0, totalLCT]; // En LCT si renuncias es 0
+        myChart.data.datasets[1].data = [totalCese, totalCese]; // En Cese cobras lo mismo en ambos casos
+        myChart.update();
     }
 
-    function validarBanco() {
-        const horas = parseFloat(document.getElementById('horas-dia').value);
-        const preaviso = parseFloat(document.getElementById('preaviso').value);
-        const status = document.getElementById('status-banco');
-
-        if (!horas || !preaviso) return;
-
-        let mensajes = [];
-        let esLegal = true;
-
-        if (horas > 10) {
-            mensajes.push("⚠️ Excede el máximo de 10hs diarias.");
-            esLegal = false;
-        }
-        if (preaviso < 48) {
-            mensajes.push("⚠️ El preaviso debe ser de al menos 48hs.");
-            esLegal = false;
-        }
-
-        if (esLegal) {
-            status.innerHTML = "✅ Configuración legal bajo el nuevo Banco de Horas.";
-            status.className = "alert alert-info";
-            status.style.backgroundColor = "#dcfce7";
-            status.style.color = "#166534";
-            status.style.border = "1px solid #86efac";
-        } else {
-            status.innerHTML = mensajes.join("<br>");
-            status.className = "alert";
-            status.style.backgroundColor = "#fee2e2";
-            status.style.color = "#991b1b";
-            status.style.border = "1px solid #fca5a5";
-        }
-    }
+    window.onload = () => {
+        initChart();
+        updateDashboard();
+    };
 </script>
 
 </body>
